@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#FFCD11" />
+  <title>6M → Fishbone (PWA)</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>6M → Fishbone</h1>
+    <div class="header-actions">
+      <button id="installBtn" class="btn secondary" hidden>Install</button>
+      <button id="generateBtn" class="btn cat">Generate Fishbone</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="inputs">
+      <div class="grid">
+        <div class="card">
+          <label class="lbl">Category Title</label>
+          <input id="cat1" class="title" value="Man" />
+          <label class="lbl">Items (one per line)</label>
+          <textarea id="items1" placeholder="Enter one item per line..."></textarea>
+        </div>
+        <div class="card">
+          <label class="lbl">Category Title</label>
+          <input id="cat2" class="title" value="Method" />
+          <label class="lbl">Items (one per line)</label>
+          <textarea id="items2" placeholder="Enter one item per line..."></textarea>
+        </div>
+        <div class="card">
+          <label class="lbl">Category Title</label>
+          <input id="cat3" class="title" value="Material" />
+          <label class="lbl">Items (one per line)</label>
+          <textarea id="items3" placeholder="Enter one item per line..."></textarea>
+        </div>
+        <div class="card">
+          <label class="lbl">Category Title</label>
+          <input id="cat4" class="title" value="Measurement" />
+          <label class="lbl">Items (one per line)</label>
+          <textarea id="items4" placeholder="Enter one item per line..."></textarea>
+        </div>
+        <div class="card">
+          <label class="lbl">Category Title</label>
+          <input id="cat5" class="title" value="Mother Nature" />
+          <label class="lbl">Items (one per line)</label>
+          <textarea id="items5" placeholder="Enter one item per line..."></textarea>
+        </div>
+        <div class="card">
+          <label class="lbl">Category Title</label>
+          <input id="cat6" class="title" value="Machine" />
+          <label class="lbl">Items (one per line)</label>
+          <textarea id="items6" placeholder="Enter one item per line..."></textarea>
+        </div>
+      </div>
+      <details class="help"><summary>Help</summary>
+        <p>Enter one item per line under each 6M category. Tap <strong>Generate Fishbone</strong> to draw the diagram.</p>
+        <p>Works offline once loaded. Use the <strong>Install</strong> button (Android/desktop) or <em>Share → Add to Home Screen</em> on iPhone.</p>
+      </details>
+    </section>
+
+    <section class="diagram">
+      <div class="diagram-header">
+        <h2>Ishikawa (6M) Fishbone</h2>
+        <div class="diagram-actions">
+          <button id="clearBtn" class="btn">Clear</button>
+          <button id="downloadBtn" class="btn">Download PNG</button>
+        </div>
+      </div>
+      <svg id="fishbone" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fishbone diagram"></svg>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <small>© <span id="year"></span> 6M → Fishbone (PWA)</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
