@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const fractions = [0.15,0.30,0.45,0.60,0.75,0.90];
-    const legLen = 190; const angle = 45 * Math.PI/180;
+    const legLen = 190; const angle = 135 * Math.PI/180; // 135° points left
 
     cats.forEach((c,i)=>{
       const isUp = (i%2===0);
