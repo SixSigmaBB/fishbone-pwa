@@ -1,25 +1,37 @@
-:root{ --cat:#FFCD11; --bg:#fafafc; --card:#fff; --text:#101418; --muted:#6b7280; --line:#cbd5e1; --accent:#0b6efd; }
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg)}
-.app-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1rem;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:3}
-.app-header h1{margin:0;font-size:1.15rem}
-.header-actions{display:flex;gap:.5rem}
-.btn{appearance:none;border:1px solid #d0d7de;background:#fff;color:#111827;padding:.55rem .9rem;border-radius:10px;font-weight:600;cursor:pointer}
-.btn:hover{filter:brightness(.98)}
-.btn.cat{background:var(--cat);border-color:#000;color:#000}
-.btn.secondary{background:#111827;color:#fff;border-color:#111827}
-.layout{display:grid;grid-template-columns:1fr;gap:1rem;max-width:1200px;margin:1rem auto;padding:0 1rem}
-.inputs .grid{display:grid;grid-template-columns:1fr;gap:1rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem}
-.lbl{display:block;color:var(--muted);font-size:.85rem;margin:.25rem 0}
-.title{width:100%;padding:.55rem;border-radius:8px;border:1px solid var(--line);font-weight:600;margin-bottom:.35rem}
-textarea{width:100%;min-height:90px;resize:vertical;border-radius:8px;border:1px solid var(--line);padding:.55rem;font-family:ui-monospace,Consolas,Menlo,monospace}
-.diagram{background:#fff;border:1px solid var(--line);border-radius:12px;padding:.9rem}
-.diagram-header{display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.diagram h2{margin:.2rem 0 .6rem 0;font-size:1.05rem}
-.diagram-actions{display:flex;gap:.5rem}
-svg{width:100%;height:auto;background:#fff;border:1px dashed #e5e7eb;border-radius:10px}
-.help{margin-top:.5rem;color:var(--muted)}
-.app-footer{text-align:center;padding:1rem;border-top:1px solid var(--line);background:#fff}
-@media (min-width: 980px){ .layout{grid-template-columns:520px 1fr} .inputs .grid{grid-template-columns:1fr 1fr} }
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
