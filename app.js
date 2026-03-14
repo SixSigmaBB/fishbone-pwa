@@ -1,5 +1,5 @@
 // Debug logs
-console.log('[Fishbone PWA] app.js loaded (v6b)');
+console.log('[Fishbone PWA] app.js loaded (v6c)');
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[Fishbone PWA] DOM ready');
@@ -28,18 +28,29 @@ document.addEventListener('DOMContentLoaded', () => {
   function wrapLines(str, maxChars){
     const words = (str||'').split(/\s+/).filter(Boolean);
     const lines = []; let cur='';
-    for(const w of words){
-      const test = cur ? cur + ' ' + w : w;
-      if(test.length > maxChars){ if(cur) lines.push(cur); cur = w; }
-      else { cur = test; }
-    }
-    if(cur) lines.push(cur);
-    return lines;
+    for(const w of words){ const t = cur? cur+' '+w : w; if(t.length>maxChars){ if(cur) lines.push(cur); cur=w; } else cur=t; }
+    if(cur) lines.push(cur); return lines;
   }
 
   function draw(){
     if(!svg) { console.error('SVG element not found'); return; }
     clearSVG();
+
+    // Canvas geometry
+    const W = 1200, H = 700; const margin = 80; const yCenter = H/2;
+
+    // --- Compute symptom text & reserve right-side space BEFORE drawing spine ---
+    const symptomText = document.getElementById('symptom')?.value.trim() || '';
+    const symptomLines = symptomText ? wrapLines(symptomText, 30) : [];
+    const pad=8, lineH=16, defaultBoxW=260, gap=14;
+    const boxW = defaultBoxW; // could auto-fit later
+    const boxH = pad*2 + lineH * Math.max(symptomLines.length, 1 || 1);
+
+    // space to reserve on the right so the box is fully visible (box + gap + a little breathing room)
+    const reserveRight = (symptomText ? (boxW + gap + 12) : 0);
+
+    const xLeft = margin;
+    const xRight = W - margin - reserveRight; // shorten the spine as needed
 
     // Marker for spine arrow
     const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
@@ -51,12 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const p = document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('d','M 0 0 L 10 5 L 0 10 z'); p.setAttribute('fill','#0f172a');
     marker.appendChild(p); defs.appendChild(marker); svg.appendChild(defs);
 
-    const W = 1200, H = 700; const xLeft = 80, xRight = W - 80; const yCenter = H/2;
-
-    // Main spine
+    // Draw main spine with arrow
     line(xLeft, yCenter, xRight, yCenter, {w:3, markerEnd:'url(#arrow)'});
 
-    // 6M
+    // Read 6M categories & items
     const cats = [
       {title: document.getElementById('cat1')?.value || 'Man',           items: getLines('items1')},
       {title: document.getElementById('cat2')?.value || 'Method',        items: getLines('items2')},
@@ -68,20 +77,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fractions = [0.15,0.30,0.45,0.60,0.75,0.90];
 
-    // Flip legs to LEFT: use 135° instead of 45° OR negate dx
-    const legLen = 190; 
-    const angle = 135 * Math.PI/180; // 135° points left
+    // LEFT-pointing legs
+    const legLen = 190;
+    const angle = 135 * Math.PI/180; // left
 
     cats.forEach((c,i)=>{
       const isUp = (i%2===0);
       const baseX = xLeft + (xRight - xLeft) * fractions[i];
       const baseY = yCenter;
-      const dx = legLen * Math.cos(angle);       // negative → left
+      const dx = legLen * Math.cos(angle);
       const dy = legLen * Math.sin(angle) * (isUp? -1 : 1);
 
       line(baseX, baseY, baseX+dx, baseY+dy, {w:2});
       const title = (c.title||'').trim() || ['Man','Method','Material','Measurement','Mother Nature','Machine'][i];
-      const tt = text(baseX+dx-30, baseY+dy + (isUp? -16: 22), title, {bold:true, size:14});
+      text(baseX+dx-30, baseY+dy + (isUp? -16: 22), title, {bold:true, size:14});
 
       const items = c.items; if(!items.length) return;
       const tStart=0.25, tEnd=0.92; const step = (tEnd - tStart) / (items.length + 1);
@@ -96,20 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // SYMPTOM box — move to the RIGHT side (blue box area), outside the arrow tip
-    const symptom = document.getElementById('symptom')?.value.trim();
-    if(symptom){
-      const lines = (function wrapLines(str, max){
-        const words = (str||'').split(/\s+/).filter(Boolean);
-        const out=[]; let cur='';
-        for(const w of words){ const t = cur? cur+' '+w : w; if(t.length>max){ if(cur) out.push(cur); cur=w; } else cur=t; }
-        if(cur) out.push(cur); return out; })(symptom, 30);
-
-      const pad=8, lineH=16, boxW=260;
-      const boxH = pad*2 + lineH*Math.max(lines.length,1);
-      const gap = 14; // gap from the arrow tip
-      const boxX = xRight + gap;      // ← to the RIGHT of the tip
-      const boxY = yCenter - boxH/2;  // vertically centered on spine
+    // SYMPTOM box to the RIGHT of the (now-shorter) tip, fully visible
+    if(symptomText){
+      const boxX = xRight + gap;                 // right of shortened tip
+      const boxY = yCenter - boxH/2;             // centered vertically
 
       const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
       rect.setAttribute('x', boxX); rect.setAttribute('y', boxY);
@@ -119,10 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
       svg.appendChild(rect);
 
       text(boxX, boxY - 6, 'Symptom', {size:12, bold:true});
-      lines.forEach((ln,i)=>{ text(boxX + pad, boxY + pad + lineH*(i+0.85), ln, {size:12}); });
+      symptomLines.forEach((ln,i)=>{ text(boxX + pad, boxY + pad + lineH*(i+0.85), ln, {size:12}); });
 
-      // small connector from arrow tip to left edge of box
-      line(xRight, yCenter, boxX, boxY + boxH/2, {w:1.2});
+      line(xRight, yCenter, boxX, boxY + boxH/2, {w:1.2}); // connector
     }
   }
 
