@@ -20,6 +20,13 @@
   <main class="layout">
     <section class="inputs">
       <div class="grid">
+        <!-- New Symptom (Root Cause / Problem Statement) card -->
+        <div class="card wide">
+          <label class="lbl">Symptom (root cause / problem statement)</label>
+          <textarea id="symptom" placeholder="Describe the observed symptom or problem..." rows="3"></textarea>
+        </div>
+
+        <!-- 6M cards -->
         <div class="card">
           <label class="lbl">Category Title</label>
           <input id="cat1" class="title" value="Man" />
@@ -58,7 +65,7 @@
         </div>
       </div>
       <details class="help"><summary>Help</summary>
-        <p>Enter one item per line under each 6M category. Tap <strong>Generate Fishbone</strong> to draw the diagram.</p>
+        <p>Enter one item per line under each 6M category. Add a short <strong>Symptom</strong> (root cause / problem statement) if you want it rendered at the arrow tip. Tap <strong>Generate Fishbone</strong> to draw the diagram.</p>
         <p>Works offline once loaded. Use the <strong>Install</strong> button (Android/desktop) or <em>Share → Add to Home Screen</em> on iPhone.</p>
       </details>
     </section>
@@ -78,10 +85,6 @@
   <footer class="app-footer">
     <small>© <span id="year"></span> 6M → Fishbone (PWA)</small>
   </footer>
-
-  <noscript>
-    <div style="padding:1rem;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;margin:1rem;border-radius:8px;">This app requires JavaScript. Please enable JavaScript and reload.</div>
-  </noscript>
 
   <script src="app.js"></script>
 </body>
