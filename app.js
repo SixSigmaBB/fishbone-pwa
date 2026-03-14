@@ -1,5 +1,5 @@
 // Debug logs
-console.log('[Fishbone PWA] app.js loaded (v6c)');
+console.log('[Fishbone PWA] app.js loaded (v6d)');
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[Fishbone PWA] DOM ready');
@@ -37,20 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
     clearSVG();
 
     // Canvas geometry
-    const W = 1200, H = 700; const margin = 80; const yCenter = H/2;
+    const W = 1200, H = 700; const marginLeft = 80; const yCenter = H/2;
 
-    // --- Compute symptom text & reserve right-side space BEFORE drawing spine ---
+    // Read Symptom and compute box size/position anchored near right edge
     const symptomText = document.getElementById('symptom')?.value.trim() || '';
-    const symptomLines = symptomText ? wrapLines(symptomText, 30) : [];
-    const pad=8, lineH=16, defaultBoxW=260, gap=14;
-    const boxW = defaultBoxW; // could auto-fit later
-    const boxH = pad*2 + lineH * Math.max(symptomLines.length, 1 || 1);
+    const lines = symptomText ? wrapLines(symptomText, 30) : [];
+    const pad=8, lineH=16, boxW=260; // could auto-fit later
+    const boxH = pad*2 + lineH * Math.max(lines.length, 1);
 
-    // space to reserve on the right so the box is fully visible (box + gap + a little breathing room)
-    const reserveRight = (symptomText ? (boxW + gap + 12) : 0);
+    // --- Anchor box by the red area (near right boundary) ---
+    const rightMargin = 80;    // distance from SVG right edge to outer box edge
+    const gap = 14;            // spacing between arrow tip and box
 
-    const xLeft = margin;
-    const xRight = W - margin - reserveRight; // shorten the spine as needed
+    const boxX = W - rightMargin - boxW;  // FIXED absolute position
+    const boxY = yCenter - boxH/2;        // centered vertically
+
+    // Place spine end so that the arrow tip sits 'gap' left of the box
+    const xRight = boxX - gap;            // arrow tip
+    const xLeft  = marginLeft;            // left end stays the same
 
     // Marker for spine arrow
     const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
@@ -62,10 +66,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const p = document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('d','M 0 0 L 10 5 L 0 10 z'); p.setAttribute('fill','#0f172a');
     marker.appendChild(p); defs.appendChild(marker); svg.appendChild(defs);
 
-    // Draw main spine with arrow
+    // Draw spine
     line(xLeft, yCenter, xRight, yCenter, {w:3, markerEnd:'url(#arrow)'});
 
-    // Read 6M categories & items
+    // Draw fixed-position Symptom box if text provided
+    if(symptomText){
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', boxX); rect.setAttribute('y', boxY);
+      rect.setAttribute('width', boxW); rect.setAttribute('height', boxH);
+      rect.setAttribute('rx', 8); rect.setAttribute('ry', 8);
+      rect.setAttribute('fill', '#ffffff'); rect.setAttribute('stroke', '#0f172a');
+      svg.appendChild(rect);
+
+      text(boxX, boxY - 6, 'Symptom', {size:12, bold:true});
+      lines.forEach((ln,i)=>{ text(boxX + pad, boxY + pad + lineH*(i+0.85), ln, {size:12}); });
+
+      // connector line from arrow tip to box
+      line(xRight, yCenter, boxX, boxY + boxH/2, {w:1.2});
+    }
+
+    // 6M categories & items
     const cats = [
       {title: document.getElementById('cat1')?.value || 'Man',           items: getLines('items1')},
       {title: document.getElementById('cat2')?.value || 'Method',        items: getLines('items2')},
@@ -78,8 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fractions = [0.15,0.30,0.45,0.60,0.75,0.90];
 
     // LEFT-pointing legs
-    const legLen = 190;
-    const angle = 135 * Math.PI/180; // left
+    const legLen = 190; const angle = 135 * Math.PI/180;
 
     cats.forEach((c,i)=>{
       const isUp = (i%2===0);
@@ -104,24 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         text(ex + 6, ey + (isUp? -6: 14), s, {size:12});
       });
     });
-
-    // SYMPTOM box to the RIGHT of the (now-shorter) tip, fully visible
-    if(symptomText){
-      const boxX = xRight + gap;                 // right of shortened tip
-      const boxY = yCenter - boxH/2;             // centered vertically
-
-      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      rect.setAttribute('x', boxX); rect.setAttribute('y', boxY);
-      rect.setAttribute('width', boxW); rect.setAttribute('height', boxH);
-      rect.setAttribute('rx', 8); rect.setAttribute('ry', 8);
-      rect.setAttribute('fill', '#ffffff'); rect.setAttribute('stroke', '#0f172a');
-      svg.appendChild(rect);
-
-      text(boxX, boxY - 6, 'Symptom', {size:12, bold:true});
-      symptomLines.forEach((ln,i)=>{ text(boxX + pad, boxY + pad + lineH*(i+0.85), ln, {size:12}); });
-
-      line(xRight, yCenter, boxX, boxY + boxH/2, {w:1.2}); // connector
-    }
   }
 
   generateBtn?.addEventListener('click', draw);
