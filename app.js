@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const nlen = Math.hypot(nx, ny) || 1;
       nx/=nlen; ny/=nlen;
 
-      const subLen = 95;
+      const subLen = 50;
       const ex = px + nx*subLen;
       const ey = py + ny*subLen;
 
