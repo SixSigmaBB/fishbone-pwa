@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== Canvas geometry =====
   const W = 1200, H = 700;
   const yCenter = H / 2;
-  const marginLeft = 80;   // left margin so the spine doesn't hug the edge
+  const marginLeft = 120;   // left margin so the spine doesn't hug the edge
 
   // ===== Read Symptom and compute box size =====
   const symptomText = document.getElementById('symptom')?.value.trim() || '';
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const boxH = pad*2 + lineH * Math.max(lines.length, 1);
 
   // ===== Anchor the Symptom box near the right edge (the red-box area) =====
-  const rightMargin = 80;             // distance from SVG right edge to *outside* of the box
+  const rightMargin = 40;             // distance from SVG right edge to *outside* of the box
   const gap = 14;                     // spacing between arrow tip and box
   const boxX = W - rightMargin - boxW;
   const boxY = yCenter - boxH/2;
