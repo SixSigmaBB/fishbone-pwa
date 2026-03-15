@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fractions = [0.15,0.30,0.45,0.60,0.75,0.90];
 
   // LEFT-pointing legs (up-left / down-left)
-  const legLen = 190;
+  const legLen = 250;
   const angle  = 135 * Math.PI/180;  // 135° → left
   cats.forEach((c, i) => {
     const isUp = (i % 2 === 0);
