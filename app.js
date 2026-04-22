@@ -2,6 +2,50 @@
 console.log('[Fishbone PWA] app.js loaded (v6d)');
 
 document.addEventListener('DOMContentLoaded', () => {
+  
+function collectState(){
+  return {
+    symptom: document.getElementById('symptom')?.value || '',
+    categories: [
+      { title: cat1.value, items: items1.value },
+      { title: cat2.value, items: items2.value },
+      { title: cat3.value, items: items3.value },
+      { title: cat4.value, items: items4.value },
+      { title: cat5.value, items: items5.value },
+      { title: cat6.value, items: items6.value },
+    ],
+    savedAt: new Date().toISOString()
+  };
+}
+
+document.getElementById('saveBtn')?.addEventListener('click', () => {
+  const data = collectState();
+  localStorage.setItem('fishboneState', JSON.stringify(data));
+  alert('Fishbone saved.');
+});
+
+document.getElementById('loadBtn')?.addEventListener('click', () => {
+  const raw = localStorage.getItem('fishboneState');
+  if(!raw){
+    alert('No saved fishbone found.');
+    return;
+  }
+  const data = JSON.parse(raw);
+  restoreState(data);
+  draw(); // redraw fishbone with loaded data
+});
+
+function restoreState(state){
+  if(!state) return;
+
+  document.getElementById('symptom').value = state.symptom || '';
+
+  state.categories?.forEach((c, i) => {
+    document.getElementById(`cat${i+1}`).value = c.title || '';
+    document.getElementById(`items${i+1}`).value = c.items || '';
+  });
+}
+
   console.log('[Fishbone PWA] DOM ready');
 
   if ('serviceWorker' in navigator) {
