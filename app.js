@@ -18,6 +18,22 @@ function collectState(){
   };
 }
 
+ocument.getElementById('saveBtn')?.addEventListener('click', () => {
+  localStorage.setItem('fishboneState', JSON.stringify(collectState()));
+  alert('Fishbone saved.');
+});
+
+document.getElementById('loadBtn')?.addEventListener('click', () => {
+  const raw = localStorage.getItem('fishboneState');
+  if(!raw){
+    alert('No saved fishbone found.');
+    return;
+  }
+  restoreState(JSON.parse(raw));
+  draw();
+});
+``
+
 document.getElementById('saveBtn')?.addEventListener('click', () => {
   const data = collectState();
   localStorage.setItem('fishboneState', JSON.stringify(data));
